@@ -326,11 +326,11 @@ that symbols accessible in the current namespace go first."
        (symbol? f) (let [var (ns-resolve (maybe-ns package) f)]
                      (if-let [args (and var (:arglists (meta var)))]
                        (pr-str args)
-                       nil))
-       :else nil))
+                       `:not-available))
+       :else `:not-available))
     (catch Throwable t nil)))
 
-;;;; Package Commands
+;;;; Completions
 
 (defslimefn list-all-package-names
   ([] (map (comp str ns-name) (all-ns)))

@@ -12,6 +12,10 @@
    no pkg exists, then nothing is done."
   ([text] (.replaceAll (re-matcher namespace-re text) "$1/")))
 
+(defn- fix-cursor-marker
+  "Changes the cursor marker"
+  ([text] (.replace text "swank::%cursor-marker%" ":cursor-marker")))
+
 (defn write-swank-message
   "Given a `writer' (java.io.Writer) and a `message' (typically an
    sexp), encode the message according to the swank protocol and
@@ -43,7 +47,7 @@
            len  (Integer/parseInt len-str 16)
            msg  (read-chars reader len read-fail-exception)
            form (try
-                  (read-string (fix-namespace msg))
+                  (read-string (fix-cursor-marker (fix-namespace msg)))
                   (catch Exception ex
                     (.println System/err (format "unreadable message: %s" msg))
                     (throw ex)))]
