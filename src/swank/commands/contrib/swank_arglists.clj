@@ -111,6 +111,14 @@
                                          1)
          :else  (message-format fname arglists pos))))))
 
+(defslimefn autodoc [raw-specs & options]
+  ;; This isn't complete but at least does something
+  (if (and raw-specs
+           (seq? raw-specs)
+           (seq? (first raw-specs)))
+    ((slime-fn 'operator-arglist) (ffirst raw-specs) *current-package*)
+    nil))
+
 (defslimefn variable-desc-for-echo-area [variable-name]
   (with-emacs-package
    (or 
