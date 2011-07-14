@@ -7,10 +7,14 @@
 (def #^{:private true}
      namespace-re #"(^\(:emacs-rex \([a-zA-Z][a-zA-Z0-9]+):")
 
+;;; FIXME
 (defn- fix-namespace
   "Changes the namespace of a function call from pkg:fn to ns/fn. If
    no pkg exists, then nothing is done."
-  ([text] (.replaceAll (re-matcher namespace-re text) "$1/")))
+  ([text]
+     (.replaceAll (re-matcher #"swank::%cursor-marker%"
+                              (.replaceAll (re-matcher namespace-re text) "$1/"))
+                  "")))
 
 (defn- fix-cursor-marker
   "Changes the cursor marker"
