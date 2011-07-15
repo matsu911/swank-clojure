@@ -614,7 +614,7 @@ corresponding attribute values per thread."
 ;;; FIXME
 (defslimefn autodoc [raw-form & args]
   (try
-    (let [meta (meta (eval `(var ~(symbol (first raw-form)))))
+    (let [meta (meta (resolve (symbol (first raw-form))))
           name (:name meta)
           arglists (:arglists meta)
           doc (:doc meta)]
