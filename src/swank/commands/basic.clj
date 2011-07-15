@@ -1,4 +1,3 @@
-
 (ns swank.commands.basic
   (:refer-clojure :exclude [load-file print-doc])
   (:use (swank util commands core)
