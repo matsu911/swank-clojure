@@ -1,7 +1,7 @@
 (ns swank.commands.contrib.swank-arglists
-  (:use (swank util core commands)))
-
-((slime-fn 'swank-require) :swank-c-p-c)
+  (:refer-clojure :exclude [load-file print-doc])
+  (:use (swank util core commands)
+        (swank.commands basic)))
 
 ;;; pos starts at 1 bc 0 is function name
 (defn position-in-arglist? [arglist pos]
@@ -113,7 +113,7 @@
 
 (defslimefn variable-desc-for-echo-area [variable-name]
   (with-emacs-package
-   (or 
+   (or
     (try
      (when-let [sym (read-string variable-name)]
        (when-let [var (resolve sym)]
@@ -121,3 +121,36 @@
            (str variable-name " => " (var-get var)))))
      (catch Exception e nil))
     "")))
+
+
+(defn autodoc*
+  [raw-specs & options]
+  (let [{:keys [print-right-margin
+                print-lines]} (if (first options)
+                                (apply hash-map options)
+                                {})]
+    (if (and raw-specs
+             (seq? raw-specs))
+      (let [expr (some #(and (seq? %) (some #{:cursor-marker} %) %)
+                       (tree-seq seq? seq raw-specs))]
+        (if (and (seq? expr) (not (= (first expr) "")))
+          (try
+            (let [var (ns-resolve (maybe-ns *current-package*) (read-string (first expr)))
+                  meta (meta var)
+                  name (:name meta)
+                  arglists (:arglists meta)
+                  doc (:doc meta)]
+              (apply str (interpose "\n" `(~@(map #(str "(" name " " % ")") arglists) ~doc))))
+            (catch Throwable t `:not-available))
+          ;; ((slime-fn 'operator-arglist)
+          ;;  (first expr)
+          ;;  *current-package*)
+          `:not-available))
+      `:not-available)))
+
+(defslimefn autodoc
+  "Return a string representing the arglist for the deepest subform in
+RAW-FORM that does have an arglist.
+TODO: The highlighted parameter is wrapped in ===> X <===."
+  [raw-specs & options]
+  (apply autodoc* raw-specs options))

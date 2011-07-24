@@ -321,11 +321,11 @@ that symbols accessible in the current namespace go first."
        (symbol? f) (let [var (ns-resolve (maybe-ns package) f)]
                      (if-let [args (and var (:arglists (meta var)))]
                        (pr-str args)
-                       nil))
-       :else nil))
-    (catch Throwable t nil)))
+                       `:not-available))
+       :else `:not-available))
+    (catch Throwable t `:not-available)))
 
-;;;; Package Commands
+;;;; Completions
 
 (defslimefn list-all-package-names
   ([] (map (comp str ns-name) (all-ns)))
@@ -610,13 +610,3 @@ corresponding attribute values per thread."
 
 (defslimefn eval-last-frame [st]
   (dbe/eval-last-frame st))
-
-;;; FIXME
-(defslimefn autodoc [raw-form & args]
-  (try
-    (let [meta (meta (resolve (symbol (first raw-form))))
-          name (:name meta)
-          arglists (:arglists meta)
-          doc (:doc meta)]
-      (apply str (interpose "\n" `(~@(map #(str "(" name " " % ")") arglists) ~doc))))
-    (catch java.lang.Exception _ "")))
