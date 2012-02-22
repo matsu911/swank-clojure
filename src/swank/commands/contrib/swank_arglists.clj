@@ -1,5 +1,5 @@
 (ns swank.commands.contrib.swank-arglists
-  (:refer-clojure :exclude [load-file])
+  (:refer-clojure :exclude [load-file print-doc])
   (:use (swank util core commands)
         (swank.commands basic)))
 

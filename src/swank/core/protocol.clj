@@ -12,9 +12,7 @@
   "Changes the namespace of a function call from pkg:fn to ns/fn. If
    no pkg exists, then nothing is done."
   ([text]
-     (.replaceAll (re-matcher #"swank::%cursor-marker%"
-                              (.replaceAll (re-matcher namespace-re text) "$1/"))
-                  "")))
+     (.replaceAll (re-matcher namespace-re text) "$1/")))
 
 (defn- fix-cursor-marker
   "Changes the cursor marker"

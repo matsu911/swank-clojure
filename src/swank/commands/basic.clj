@@ -751,16 +751,3 @@ corresponding attribute values per thread."
 
 (defslimefn quit-thread-browser []
   (reset! thread-list []))
-
-(defslimefn eval-last-frame [st]
-  (dbe/eval-last-frame st))
-
-;;; FIXME
-(defslimefn autodoc [raw-form & args]
-  (try
-    (let [meta (meta (resolve (symbol (first raw-form))))
-          name (:name meta)
-          arglists (:arglists meta)
-          doc (:doc meta)]
-      (apply str (interpose "\n" `(~@(map #(str "(" name " " % ")") arglists) ~doc))))
-    (catch java.lang.Exception _ "")))
